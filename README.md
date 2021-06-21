@@ -85,10 +85,19 @@ Further version will be developed and updated.
 
 ### Load R package
 
+``` r
+library(survival)
+library(randomForestSRC)
+library(survAUC)
+library(knitr)
+source('D:/Document/AutoScore-Survival/R/AutoScore_Survival.R')
+load("D:/Document/sample_data_survival.RData")
+```
+
 ### Load data
 
   - Read data from CSV or Excel files.
-  - `sample_data_survival` has 10000 simulated samples, with the same
+  - `sample_data_survival` has 10000 samples, with the same
     distribution as the data in the MIMIC-III ICU database
     (<https://mimic.mit.edu/>).
 
