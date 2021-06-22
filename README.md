@@ -81,6 +81,20 @@ to build your own scores.
 Note: This is just the initial version of the AutoScore-Survival.
 Further version will be developed and updated.
 
+### Citation
+
+Xie F, Ning Y, Yuan H, Goldstein BA, Ong MEH, Liu N*, Chakraborty B. AutoScore-Survival: developing interpretable machine learning-based time-to-event scores with right-censored survival data. (<https://arxiv.org/abs/2106.06957>)
+
+Xie F, Chakraborty B, Ong MEH, Goldstein BA, Liu N. AutoScore: A Machine
+Learning-Based Automatic Clinical Score Generator and Its Application to
+Mortality Prediction Using Electronic Health Records. JMIR Medical
+Informatics 2020;8(10):e21798 (<http://dx.doi.org/10.2196/21798>)
+
+### Contact
+
+  - Feng Xie (Email: <xief@u.duke.nus.edu>)
+  - Nan Liu (Email: <liu.nan@duke-nus.edu.sg>)
+
 # **AutoScore-Survival Demonstration**
 
 ### Load R package
