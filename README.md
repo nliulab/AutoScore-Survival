@@ -6,6 +6,8 @@ time-to-event scores with right-censored survival data
     Introduction**](#autoscore-survival-introduction)
       - [Description](#description)
       - [Functions and pipeline](#functions-and-pipeline)
+      - [Citation](#Citation)
+      - [Contact](#Contact)
   - [**AutoScore-Survival
     Demonstration**](#autoscore-survival-demonstration)
       - [Load R package](#load-r-package)
