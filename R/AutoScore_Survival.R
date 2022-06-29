@@ -3,18 +3,17 @@
 AutoScore_Survival_rank <- function(train_set, ntree = 50) {
   #set.seed(4)
   model <-
-    rfsrc(Surv(time, status) ~ ., TrainSet, nsplit = 10, ntree =ntree, importance= "permute",
+    rfsrc(Surv(time, status) ~ ., train_set, nsplit = 10, ntree =ntree, importance= "permute",
           do.trace = T)
 
   # estimate variable importance
-  importance <- vimp(d.obj)
+  importance <- vimp(model)
 
   # summarize importance
-  names(importance) <- rownames(importance)
-  importance <- sort(importance, decreasing = T)
+  importance_a <- sort(importance[[35]], decreasing = T)
   cat("The ranking based on variable importance was shown below for each variable: \n")
-  print(importance)
-  return(importance)
+  print(importance_a)
+  return(importance_a)
 }
 
 
@@ -31,7 +30,9 @@ AutoScore_Survival_parsimony <-
            categorize = "quantile",
            quantiles = c(0, 0.05, 0.2, 0.8, 0.95, 1),
            max_cluster = 5,
-           do_trace = FALSE) {
+           do_trace = FALSE,
+           auc_lim_min = 0.5,
+           auc_lim_max = "adaptive") {
     if (n_max > length(rank)) {
       warning(
         "WARNING: the n_max (",
@@ -82,8 +83,7 @@ AutoScore_Survival_parsimony <-
               categorize,
               quantiles,
               max_cluster,
-              max_score,
-              time_point
+              max_score
             )
           #print(auc(model_roc))
           AUC <- c(AUC, model_roc)
@@ -116,20 +116,34 @@ AutoScore_Survival_parsimony <-
       auc_set$sum <- rowSums(auc_set) / fold
       cat("***list of final mean AUC values through cross-validation are shown below \n")
       print(data.frame(auc_set$sum))
-      plot(
-        auc_set$sum,
-        main = paste(
-          "Final Parsimony Plot based on ",
-          fold,
-          "-fold Cross Validation",
-          sep = ""
-        ),
-        xlab = "Number of Variables",
-        ylab = "Area Under the Curve",
-        col = "#2b8cbe",
-        lwd = 2,
-        type = "o"
-      )
+      var_names <- factor(names(rank)[n_min:n_max], levels = names(rank)[n_min:n_max])
+      dt <- data.frame(AUC = auc_set$sum, variables = var_names, num = n_min:n_max)
+      #names(AUC) <- n_min:n_max
+      #cat("list of AUC values are shown below")
+      #print(data.frame(AUC))
+      if(auc_lim_max == "adaptive"){
+        auc_lim_max <- ceiling(max(auc_set$sum)*10)/10
+      }
+      
+      p <- ggplot(data = dt, mapping = aes_string(x = "variables", y = "AUC")) +
+        geom_bar(stat = "identity", fill = "steelblue") +
+        coord_cartesian(ylim = c(auc_lim_min, auc_lim_max))+
+        theme_bw() +
+        labs(x = "", y = "Integrated Area Under the Curve", title = paste("AutoScore-Survival:Final parsimony plot based on ", fold,
+                                                               "-fold cross validation", sep = "")) +
+        theme(legend.position = "none",
+              axis.text = element_text(size = 12),
+              axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+      
+      paste("Final Parsimony Plot based on ", fold,
+            "-fold Cross Validation", sep = "")
+      
+      # Add number of variables to bar:
+      if (nrow(dt) >= 100) {
+        print( p + geom_text(aes(label = num), vjust = 1.5, colour = "white", angle = 90))
+      } else {
+        print( p + geom_text(aes(label = num), vjust = 1.5, colour = "white"))
+      }
       return(auc_set)
     }
 
@@ -291,7 +305,7 @@ AutoScore_Survival_testing <-
 
       # Final evaluation based on testing set
       cat("***Performance using AutoScore (based on unseen test Set):\n")
-      print_performance(test_set_3$total_score, test_set_3, time_point)
+      print_performance_ci(test_set_3$total_score, test_set_3, time_point)
       #Modelprc <- pr.curve(test_set_3$total_score[which(y_test == 1)],test_set_3$total_score[which(y_test == 0)],curve = TRUE)
       #values<-coords(model_roc, "best", ret = c("specificity", "sensitivity", "accuracy", "npv", "ppv", "precision"), transpose = TRUE)
       pred_score <-
@@ -610,6 +624,47 @@ print_performance <-
   }
 
 
+print_performance_ci <-
+  function(score, ValidationSet, time_point,cycle=100) {
+    result_all<-data.frame(matrix(nrow=0,ncol=2+length(time_point)))
+    for(i in 1:cycle){
+      len<-length(ValidationSet[,1])
+      index<-sample(1:len,len,replace = TRUE)
+      Val_tmp<-ValidationSet[index,]
+      score_tmp <- score[index]
+    result<-c()
+    iAUC<- eva_performance_iauc(score_tmp, Val_tmp,print = FALSE)
+    result<-c(result,iAUC)
+    Surv.rsp.new <- Surv(Val_tmp$time, Val_tmp$status)
+    AUC_c<-concordancefit(Surv.rsp.new, -score_tmp)
+    result<-c(result,AUC_c$concordance)
+    #3. D-index
+    #AUC_d<-D.index(x=score, surv.time=ValidationSet$time,surv.event=ValidationSet$status)
+    #cat("D_index: ", AUC_d$d.index, "\n")
+    
+    #7. AUC_uno all
+    AUC_uno <- AUC.uno(Surv.rsp.new, Surv.rsp.new, lpnew = score_tmp, times = time_point)
+    AUC_t <- data.frame(time_point=time_point, AUC_t=AUC_uno$auc)
+    result<-c(result,AUC_t$AUC_t)
+    result_all<-rbind(result_all,result)}
+    
+    #colSums(AUC_all_tmp)
+    m<-colMeans(result_all)
+    up<-sapply(result_all,function(x){quantile(x,probs = c(0.975))})
+    down<-sapply(result_all,function(x){quantile(x,probs = c(0.025))})
+    result_final<-paste0(round(m,3)," (",round(down,3),"-",round(up,3),")")
+    #names(result_final)<-c("iAUC","C_index",time_point)}
+    cat("Integrated AUC by all time points: " )
+    cat(result_final[1])
+    cat("\n")
+    cat("C_index: ", result_final[2], "\n")
+    AUC_t <- data.frame(time_point=time_point, AUC_t=result_final[-c(1,2)])
+    cat("The AUC(t) are shown as bwlow:\n")
+    print(AUC_t)
+    
+  }
+
+
 # Internal_function -------------------------------------------------------
 ## built-in function for AutoScore below
 ## Those functions are cited by pipeline functions
@@ -711,12 +766,12 @@ compute_auc_val <-
 
     # calculate iAUC value for plotting parsimony plot.
     model_roc <-
-      eva_performance_iauc( validation_set_3$total_score, validation_set_3)
+      eva_performance_iauc( validation_set_3$total_score, validation_set_3,print=FALSE)
 
     return(model_roc)
   }
 
-eva_performance_iauc<-function(score,ValidationSet){
+eva_performance_iauc<-function(score,ValidationSet,print=TRUE){
   AUC<-c()
   #1. iAUC_uno +
   Surv.rsp.new <- Surv(ValidationSet$time, ValidationSet$status)
@@ -734,8 +789,8 @@ eva_performance_iauc<-function(score,ValidationSet){
   km_survival_sum<-sum(km_survival_w-km_survival)
   weight<-(km_survival_w-km_survival)/km_survival_sum
   iAUC<-sum(weight*AUC_uno$auc)
-  cat(iAUC)
-  cat("\n")
+  if(print){cat(iAUC)
+  cat("\n")}
   return(iAUC)
 }
 
