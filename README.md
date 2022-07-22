@@ -86,8 +86,8 @@ Further version will be developed and updated.
 ### Citation
 
 Xie F, Ning Y, Yuan H, Goldstein BA, Ong MEH, Liu N, Chakraborty B. 
-AutoScore-Survival: developing interpretable machine learning-based 
-time-to-event scores with right-censored survival data. arXiv:2106.06957 (<https://arxiv.org/abs/2106.06957>)
+AutoScore-Survival: Developing interpretable machine learning-based time-to-event scores with right-censored survival data
+Journal of biomedical informatics, 125 (2022) (<https://doi.org/10.1016/j.jbi.2021.103959>)
 
 Xie F, Chakraborty B, Ong MEH, Goldstein BA, Liu N. AutoScore: A Machine
 Learning-Based Automatic Clinical Score Generator and Its Application to
