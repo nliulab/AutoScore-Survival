@@ -2,15 +2,6 @@ AutoScore-Survival: Developing interpretable machine learning-based
 time-to-event scores with right-censored survival data
 ================
 
-## Important Information
--   **AutoScore-Survival has been merged with AutoScore package. Please refer to [**AutoScore**](https://github.com/nliulab/AutoScore/) for using AutoScore-Survival functions**
--   **Check out bookdown pages (<https://tinyurl.com/AutoScoreBook/>) for guidebook and tutorial**
--   **Check out [**AutoScore Related Published Papers**](https://github.com/nliulab/AutoScore/blob/master/README_Application.md)**
--   **[CRAN Package (version 0.3.0)](<https://cran.r-project.org/web/packages/AutoScore/>)**
-
-
-## AutoScore-Survival Description
-
 AutoScore-Survival is an method extension to AutoScore,  and a novel machine learning framework to automate the
 development of interpretable time-to-event scores. AutoScore-Survival
 consists of six modules: 1) variable ranking with machine learning, 2)
@@ -22,6 +13,7 @@ implemented and validated in clinical practice. Moreover, it enables
 users to build transparent and interpretable time-to-event scores
 quickly in a straightforward manner.
 
+> ### AutoScore-Ordinal has been merged with the [AutoScore package](https://github.com/nliulab/AutoScore/). Please visit [AutoScore bookdown page](https://nliulab.github.io/AutoScore/) for a full tutorial.
 
 ## Citation
 
@@ -39,8 +31,9 @@ Informatics 2020;8(10):e21798 (<http://dx.doi.org/10.2196/21798>)
   - Feng Xie (Email: <xief@u.duke.nus.edu>)
   - Nan Liu (Email: <liu.nan@duke-nus.edu.sg>)
 
-## AutoScore-Survival Installation
-### Install the development version from GitHub or the stable version from CRAN (recommended):
+## Package installation
+
+Install from GitHub or CRAN:
 
 ``` r
 # From Github
@@ -52,7 +45,7 @@ install_github(repo = "nliulab/AutoScore", build_vignettes = TRUE)
 install.packages("AutoScore")
 ```
 
-### Load R package
+Load AutoScore package: 
 
 ``` r
 library(AutoScore)
