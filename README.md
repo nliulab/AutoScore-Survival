@@ -13,7 +13,7 @@ implemented and validated in clinical practice. Moreover, it enables
 users to build transparent and interpretable time-to-event scores
 quickly in a straightforward manner.
 
-> ### AutoScore-Ordinal has been merged with the [AutoScore package](https://github.com/nliulab/AutoScore/). Please visit [AutoScore bookdown page](https://nliulab.github.io/AutoScore/) for a full tutorial.
+> ### AutoScore-Survival has been merged with the [AutoScore package](https://github.com/nliulab/AutoScore/). Please visit [AutoScore bookdown page](https://nliulab.github.io/AutoScore/) for a full tutorial.
 
 ## Citation
 
