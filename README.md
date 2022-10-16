@@ -51,6 +51,5 @@ Load AutoScore package:
 library(AutoScore)
 ```
 
-Please go to our bookdown page (<https://nliulab.github.io/AutoScore/>)
-for looking at the full tutorial of using AutoScore package
+
 
